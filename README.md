@@ -1,10 +1,10 @@
-#Readme SteamProject
-##Doel project
+# Readme SteamProject
+## Doel project
 Een grafische weergave van het gaming gedrag van jou vrienden.
 Zoals bijvoorbeeld welke games je vrienden spelen, welke games
 het meest gespeeld worden en wanneer je vrienden online zijn.
 
-##Hoe voer je het programma uit
+## Hoe voer je het programma uit
 1. start het programma "Steam Data Dashboard" op
 2. run dit programma met Python door rechter muis knop te drukken en vervolgens "Open with Python"
 3. Als je dit progamma uitvoerd in een code edditor druk op "Run Code" met als interpreter Python

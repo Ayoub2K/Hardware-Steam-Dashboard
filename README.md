@@ -9,6 +9,7 @@ het meest gespeeld worden en wanneer je vrienden online zijn.
 2. run dit programma met Python door rechter muis knop te drukken en vervolgens "Open with Python"
 3. Als je dit progamma uitvoerd in een code edditor druk op "Run Code" met als interpreter Python
 4. Hierin zal je alle Data zien
+
 #### Leden
 Jarno   1781716 jarno.brocker@student.hu.nl   Jarno-2003
 Mees    1785659 Mees.soentken@student.hu.nl   MeesSoentken

@@ -10,8 +10,8 @@ het meest gespeeld worden en wanneer je vrienden online zijn.
 3. Als je dit progamma uitvoerd in een code edditor druk op "Run Code" met als interpreter Python
 4. Hierin zal je alle Data zien
 #### Leden
-Jarno   1781716 jarno.brocker@student.hu.nl  
-Mees    1785659 Mees.soentken@student.hu.nl  
-Max     1783784 max.appeldoorn@student.hu.nl  
-Ayoub   1783513 ayoub.aarkoub@student.hu.nl  
-Gianni  1753114 gianni.zucca@student.hu.nl  
+Jarno   1781716 jarno.brocker@student.hu.nl   Jarno-2003
+Mees    1785659 Mees.soentken@student.hu.nl   MeesSoentken
+Max     1783784 max.appeldoorn@student.hu.nl  appeltje18
+Ayoub   1783513 ayoub.aarkoub@student.hu.nl   Ayoub2K
+Gianni  1753114 gianni.zucca@student.hu.nl    GGrant97

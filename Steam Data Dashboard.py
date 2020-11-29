@@ -19,7 +19,7 @@ display = Text(root, background="#f0f0f0", height=18, font=("Helvetica", 16), pa
 display.grid(row=1, column=0)
 display.insert(END, f'''Naam van eerste item in .Json bestand: {EersteItem} \n\n''')
 display.insert(END, f'''Nieuwste game op Steam: {sortedList[-1]['name']}\nRelease: {sortedList[-1]['release_date']}\n\n''')
-display.insert(END, f'''Oudste game op Steam: {sortedList[0]['name']}\nRelease: {sortedList[-1]['release_date']}\n\n''')
+display.insert(END, f'''Oudste game op Steam: {sortedList[0]['name']}\nRelease: {sortedList[0]['release_date']}\n\n''')
 #Dashboard header
 header = Label(master=root,
               text='Steam Dashboard',

@@ -10,39 +10,39 @@ def list_data(key):
         list.append([i[key], i['name']])
     return list
 
-def selectionSort(list):
-    n = len(list)
-    for i in range(n):
-        minimum = i
 
-        for j in range(i + 1, n):
-            if (list[j] < list[minimum]):
-                minimum = j
-
-        list[i], list[minimum] = list[minimum], list[i]
+def insertionSort(list):
+    for i in range(1, len(list)):
+        key = list[i]
+        j = i - 1
+        while j >= 0 and key < list[j]:
+            list[j + 1] = list[j]
+            j -= 1
+        list[j + 1] = key
     return list
+
 
 def toonNaam():
     display.delete(1.0, END)
-    sortedlist = selectionSort(list_data('name'))
+    sortedlist = insertionSort(list_data('name'))
     for i in sortedlist:
         display.insert(END, f'''{i[0]}\n''')
 
 def toonPrijs():
     display.delete(1.0, END)
-    sortedlist = selectionSort(list_data('price'))
+    sortedlist = insertionSort(list_data('price'))
     for i in sortedlist:
         display.insert(END, f'''€{i[0]} - {i[1]} \n''')
 
 def toonDatum():
     display.delete(1.0, END)
-    sortedlist = selectionSort(list_data('release_date'))
+    sortedlist = insertionSort(list_data('release_date'))
     for i in sortedlist:
         display.insert(END, f'''{i[0]} - {i[1]} \n''')
 
 def toonPlaytime():
     display.delete(1.0, END)
-    sortedlist = selectionSort(list_data('median_playtime'))
+    sortedlist = insertionSort(list_data('median_playtime'))
     for i in sortedlist:
         display.insert(END, f'''{i[0]} - {i[1]}\n''')
 

@@ -20,9 +20,6 @@ def selectionSort(list):
                 minimum = j
 
         list[i], list[minimum] = list[minimum], list[i]
-        #temp = list[i]
-        #list[i] = list[minimum]
-        #list[minimum] = temp
     return list
 
 def toonNaam():

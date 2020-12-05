@@ -6,15 +6,15 @@ with open('steam.json') as jsonFile:
 
 def list_data(key):
     list = []
-    for i in data:
-        list.append([i[key], i['name']])
+    for index in data:
+        list.append([index[key], index['name']])
     return list
 
 
 def insertionSort(list):
-    for i in range(1, len(list)):
-        key = list[i]
-        j = i - 1
+    for index in range(1, len(list)):
+        key = list[index]
+        j = index - 1
         while j >= 0 and key < list[j]:
             list[j + 1] = list[j]
             j -= 1
@@ -25,26 +25,26 @@ def insertionSort(list):
 def toonNaam():
     display.delete(1.0, END)
     sortedlist = insertionSort(list_data('name'))
-    for i in sortedlist:
-        display.insert(END, f'''{i[0]}\n''')
+    for index in sortedlist:
+        display.insert(END, f'''{index[0]}\n''')
 
 def toonPrijs():
     display.delete(1.0, END)
     sortedlist = insertionSort(list_data('price'))
-    for i in sortedlist:
-        display.insert(END, f'''€{i[0]} - {i[1]} \n''')
+    for index in sortedlist:
+        display.insert(END, f'''€{index[0]} - {index[1]} \n''')
 
 def toonDatum():
     display.delete(1.0, END)
     sortedlist = insertionSort(list_data('release_date'))
-    for i in sortedlist:
-        display.insert(END, f'''{i[0]} - {i[1]} \n''')
+    for index in sortedlist:
+        display.insert(END, f'''{index[0]} - {index[1]} \n''')
 
 def toonPlaytime():
     display.delete(1.0, END)
     sortedlist = insertionSort(list_data('median_playtime'))
-    for i in sortedlist:
-        display.insert(END, f'''{i[0]} - {i[1]}\n''')
+    for index in sortedlist:
+        display.insert(END, f'''{index[0]} - {index[1]}\n''')
 
 
 

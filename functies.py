@@ -111,3 +111,28 @@ def frequentieOwner(lst):
         elif i == '0-20000':
             freqDict['0-20000'] += 1
     return freqDict
+
+def frequentieLeeftijd(lst):
+
+    freqDict = {
+        '0': 0,
+        '3': 0,
+        '7': 0,
+        '12': 0,
+        '16': 0,
+        '18': 0,
+    }
+    for i in lst:
+        if i == 18:
+            freqDict['18'] += 1
+        elif i == 16:
+            freqDict['16'] += 1
+        elif i == 12:
+            freqDict['12'] += 1
+        elif i == 7:
+            freqDict['7'] += 1
+        elif i == 3:
+            freqDict['3'] += 1
+        elif i == 0:
+            freqDict['0'] += 1
+    return freqDict

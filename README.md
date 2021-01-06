@@ -5,6 +5,11 @@ Zoals bijvoorbeeld welke games je vrienden spelen, welke games
 het meest gespeeld worden en wanneer je vrienden online zijn.
 
 ## Hoe voer je het programma uit
+
+voor de eerste setup is het nodig om een paar installs te doen in de terminal, ze gaan als volgt:
+
+pip install tkinter, pip install matplotlib, pip install json en pip install PIL
+
 1. start het programma "Steam Data Dashboard" op
 2. run dit programma met Python door rechter muis knop te drukken en vervolgens "Open with Python"
 3. Als je dit progamma uitvoerd in een code edditor druk op "Run Code" met als interpreter Python

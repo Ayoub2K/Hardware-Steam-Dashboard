@@ -4,35 +4,34 @@ import matplotlib.pyplot as plt
 from PIL import ImageTk, Image
 
 Owners = fc.frequentieOwner(fc.list_int('owners'))
-plt.barh(list(Owners.keys()), Owners.values(), color='#171a21')
+plt.barh(list(Owners.keys()), Owners.values(), color='#171a21', alpha=0.8)
+plt.title('Hoeveel owners 1 game heeft')
 plt.tight_layout()
 plt.savefig('grafiekowner.png', dpi=100)
 
 def FreqOwner():
+    destroy()
     display.delete(1.0, END)
     Owners = fc.frequentieOwner(fc.list_int('owners'))
     for key, value in Owners.items():
-        display.insert(END, f'''{key} -> {value} \n''')
+        display.insert(END, f'''   {key} -> {value} \n''')
 
 def FreqLeeftijd():
+    destroy()
     display.delete(1.0, END)
     Leeftijd = fc.frequentieLeeftijd(fc.list_int('required_age'))
     for key, value in Leeftijd.items():
-        display.insert(END, f'''{key} -> {value} \n''')
-
-def open_imgleeftijd():
-    DestroyButton.place(x=50, y=550, width=200)
+        display.insert(END, f'''  {key} -> {value} \n''')
 
 def open_imgowner():
     panel.place(x=250, y=85)
-    DestroyButton.place(x=50, y=550, width=200)
 
 def destroy():
     panel.place_forget()
-    DestroyButton.place_forget()
 
 
 def search():
+    destroy()
     display.delete(1.0, END)
     zoekwoord = str(Search.get())
     naamlijst = (fc.search_data(zoekwoord))
@@ -56,34 +55,40 @@ Negatieve reviews: {data[7]} \n
 
 
 def toonOwners():
+    destroy()
     display.delete(1.0, END)
-    sortedlist = fc.insertionSort(fc.list_data('owners'))
+    sortedlist = fc.mergeSort(fc.list_data('owners'))
     for index in sortedlist:
         display.insert(END, f'''{index[0]} - {index[1]}\n''')
 
 def toonPrijs():
+    destroy()
     display.delete(1.0, END)
-    sortedlist = fc.insertionSort(fc.list_data('price'))
+    sortedlist = fc.mergeSort(fc.list_data('price'))
     for index in sortedlist:
         display.insert(END, f'''€{index[0]} - {index[1]} \n''')
 
 def GemiddeldePrijs():
+    destroy()
     display.delete(1.0, END)
     gemPrijs = fc.gemiddelde(fc.list_int('price'))
     afgerond = round(gemPrijs, 2)
     display.insert(END, f'''De gemiddelde prijs van games : €{afgerond} \n''')
 
 def RangePrijs():
+    destroy()
     display.delete(1.0, END)
     RangePrijs = fc.Rng(fc.list_int('price'))
     display.insert(END, f'''De Range van prijzen : {RangePrijs} \n''')
 
 def MediaanPrijs():
+    destroy()
     display.delete(1.0, END)
     MediaanPrijs = fc.mediaan(fc.list_int('price'))
     display.insert(END, f'''De Mediaan van prijzen : €{MediaanPrijs} \n''')
 
 def modusLeeftijd():
+    destroy()
     display.delete(1.0, END)
     values = list(fc.frequentieLeeftijd(fc.list_int('required_age')).values())
     hoogsteValue = max(values)
@@ -94,6 +99,7 @@ def modusLeeftijd():
     display.insert(END, f'''De Mediaan van het minimum leeftijd = {modi} \n''')
 
 def variatieLeeftijd():
+    destroy()
     display.delete(1.0, END)
     gemideld = fc.gemiddelde(fc.list_int('required_age'))
     samen = []
@@ -152,8 +158,6 @@ buttonModusleeftijd = Button(master=root, text='Modus minimum Leeftijd',backgrou
 buttonModusleeftijd.place(x=50, y=460, width=200)
 buttonVarleeftijd = Button(master=root, text='Variatie minimum Leeftijd',background='#171a21', foreground='#FFFFFF', command=variatieLeeftijd)
 buttonVarleeftijd.place(x=50, y=490, width=200)
-
-DestroyButton = Button(master=root, text='Destroy',background='#171a21', foreground='#FFFFFF', command=destroy)
 
 img = Image.open("grafiekowner.png")
 img = img.resize((650, 500), Image.ANTIALIAS)

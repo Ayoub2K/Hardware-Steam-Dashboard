@@ -55,7 +55,13 @@ Negatieve reviews: {data[7]} \n
     Search.delete(0, END)
 
 
-def toonOwners():
+def punt_naar_komma(getal):
+    getal = str(getal)
+    getal = getal.replace('.', ',')
+    return getal
+
+
+def toon_required_age():
     destroy()
     display.delete(1.0, END)
     sortedlist = fc.mergeSort(fc.list_data('required_age'))
@@ -67,26 +73,26 @@ def toonPrijs():
     display.delete(1.0, END)
     sortedlist = fc.mergeSort(fc.list_data('price'))
     for index in sortedlist:
-        display.insert(END, f'''€{index[0]} - {index[1]} \n''')
+        display.insert(END, f'''€{punt_naar_komma(index[0])} - {index[1]} \n''')
 
 def GemiddeldePrijs():
     destroy()
     display.delete(1.0, END)
     gemPrijs = fc.gemiddelde(fc.list_int('price'))
     afgerond = round(gemPrijs, 2)
-    display.insert(END, f'''De gemiddelde prijs van games : €{afgerond} \n''')
+    display.insert(END, f'''De gemiddelde prijs van games : €{punt_naar_komma(afgerond)} \n''')
 
 def RangePrijs():
     destroy()
     display.delete(1.0, END)
     RangePrijs = fc.Rng(fc.list_int('price'))
-    display.insert(END, f'''De Range van prijzen : {RangePrijs} \n''')
+    display.insert(END, f'''De Range van prijzen : {punt_naar_komma(RangePrijs)} \n''')
 
 def MediaanPrijs():
     destroy()
     display.delete(1.0, END)
     MediaanPrijs = fc.mediaan(fc.list_int('price'))
-    display.insert(END, f'''De Mediaan van prijzen : €{MediaanPrijs} \n''')
+    display.insert(END, f'''De Mediaan van prijzen : €{punt_naar_komma(MediaanPrijs)} \n''')
 
 def modusLeeftijd():
     destroy()
@@ -114,7 +120,7 @@ def variatieLeeftijd():
 def toon_gametijd():
     destroy()
     display_2.delete(1.0, END)
-    display_2.insert(END, f'''{API.naam(steam_id[0])} heeft totaal {API.totale_gametijd(steam_id[0])} uur gegamed!\n''')
+    display_2.insert(END, f'''{API.naam(steam_id[0])} heeft totaal {punt_naar_komma(API.totale_gametijd(steam_id[0]))} uur gegamed!\n''')
 
 
 def toon_owned_games():
@@ -135,7 +141,10 @@ def get_steam_id():
     steam_id.clear()
     steam_id.append(steam_id_entry.get())
     steam_id_entry.delete(0, 'end')
-    steam_id_info.config(text=f'nu in gebruik:\n{steam_id[0]}\n{API.naam(steam_id[0])}')
+    if steam_id[0] == '':
+        steam_id_info.config(text='Geen steam id ingevuld')
+    else:
+        steam_id_info.config(text=f'nu in gebruik:\n{steam_id[0]}\n{API.naam(steam_id[0])}')
 
 
 steam_id = []  #steam id: 76561198169107517
@@ -191,7 +200,7 @@ Search.place(x=50, y=100, width=150, height=25)
 send = Button(master=frame_1, text=' > ',background='#171a21', foreground='#FFFFFF', command=search)
 send.place(x=200, y=100, width=50)
 
-buttonOwners = Button(master=frame_1, text='required age',background='#171a21', foreground='#FFFFFF', command=toonOwners)
+buttonOwners = Button(master=frame_1, text='required age',background='#171a21', foreground='#FFFFFF', command=toon_required_age)
 buttonOwners.place(x=50, y=150, width=200)
 
 buttonPrijs = Button(master=frame_1, text='Prijs',background='#171a21', foreground='#FFFFFF', command=toonPrijs)

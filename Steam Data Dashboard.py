@@ -1,15 +1,65 @@
 from tkinter import *
 import functies as fc
 import API
+import os
+import RPi.GPIO as GPIO
+import time
 import matplotlib.pyplot as plt
 from PIL import ImageTk, Image
-import RPi.GPIO as GPIO
 
-Owners = fc.frequentieOwner(fc.list_int('owners'))
-plt.barh(list(Owners.keys()), Owners.values(), color='#171a21', alpha=0.8)
-plt.title('Hoeveel owners 1 game heeft')
-plt.tight_layout()
-plt.savefig('grafiekowner.png', dpi=100)
+GPIO.setmode( GPIO.BCM )
+GPIO.setwarnings( 0 )
+
+switch = 23
+sr04_trig = 24
+sr04_echo = 25
+servo = 18
+
+GPIO.setup( switch, GPIO.IN, pull_up_down=GPIO.PUD_DOWN )
+GPIO.setup( sr04_trig, GPIO.OUT )
+GPIO.setup( sr04_echo, GPIO.IN, pull_up_down=GPIO.PUD_DOWN )
+GPIO.setup(servo, GPIO.OUT)
+
+def pulse( pin, delay1, delay2 ):
+   GPIO.output(pin, GPIO.HIGH)
+   time.sleep(delay1)
+   GPIO.output(pin, GPIO.LOW)
+   time.sleep(delay2)
+
+def servo_pulse( pin_nr, aantal_uren_gametijd ):
+    position = aantal_uren_gametijd
+    print(aantal_uren_gametijd)
+    print(position)
+    pos1 = 0.0005 + (0.002/100*position)
+    pos2 = 0.02
+    print(pos1)
+    print(pos2)
+    pulse(pin_nr, pos1, pos2)
+
+def sr04( trig_pin, echo_pin ):
+   GPIO.output(trig_pin, GPIO.HIGH)
+
+   time.sleep(0.00001)
+   GPIO.output(trig_pin, GPIO.LOW)
+
+   starttime = time.time_ns()
+   while GPIO.input(echo_pin) == False:
+      starttime = time.time_ns()
+
+   endtime = time.time_ns()
+   while GPIO.input(echo_pin) == True:
+      endtime = time.time_ns()
+
+   heenenweer = (endtime - starttime) / 2
+   afstand = (heenenweer * 343)
+   afstandCentimeter = (afstand / 10000000)
+   return afstandCentimeter
+
+def displayCheckRPi():
+    """Needs checking otherwise doesn't work on RPi"""
+    if os.environ.get('DISPLAY', '') == '':
+        os.environ.__setitem__('DISPLAY', ':0.0')
+displayCheckRPi()
 
 def FreqOwner():
     destroy()
@@ -43,16 +93,16 @@ def search():
     elif zoekwoord in naamlijst:
         data = fc.search_data(zoekwoord)
         display.insert(END, f'''
-Game: {data[0]} \n
-prijs: €{data[4]} \n
-Platform : {data[8]} \n
-Publicatiedatum: {data[1]} \n
-Ontwikkelaar: {data[2]} \n
-Genre: {data[3]} \n
-vereiste leeftijd: {data[5]} \n
-Postieve reviews: {data[6]} \n
-Negatieve reviews: {data[7]} \n
-''')
+    Game: {data[0]} \n
+    prijs: €{data[4]} \n
+    Platform : {data[8]} \n
+    Publicatiedatum: {data[1]} \n
+    Ontwikkelaar: {data[2]} \n
+    Genre: {data[3]} \n
+    vereiste leeftijd: {data[5]} \n
+    Postieve reviews: {data[6]} \n
+    Negatieve reviews: {data[7]} \n
+    ''')
     Search.delete(0, END)
 
 
@@ -119,6 +169,10 @@ def variatieLeeftijd():
 
 
 def toon_gametijd():
+    x = API.totale_gametijd(steam_id[0])
+    gametijd = round( x /10)
+    for i in range(0, gametijd, 1):
+        servo_pulse(servo, gametijd)
     destroy()
     display_2.delete(1.0, END)
     display_2.insert(END, f'''{API.naam(steam_id[0])} heeft totaal {punt_naar_komma(API.totale_gametijd(steam_id[0]))} uur gegamed!\n''')
@@ -150,16 +204,12 @@ def get_steam_id():
 
 steam_id = []  #steam id: 76561198169107517
 
-switch1 = 2
-switch2 = 3
-GPIO.setup(switch1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(switch2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+#Owners = fc.frequentieOwner(fc.list_int('owners'))
+#plt.barh(list(Owners.keys()), Owners.values(), color='#171a21', alpha=0.8)
+#plt.title('Hoeveel owners 1 game heeft')
+#plt.tight_layout()
+#plt.savefig('grafiekowner.png', dpi=100)
 
-while True:
-    if (GPIO.input(switch1)):
-        print(1)
-    elif (GPIO.input(switch2)):
-        print(2)
 
 root = Tk()
 root.title("Steam Dashboard")
@@ -283,6 +333,11 @@ button_gametijd.place(x=50, y=190, width=200)
 button_owned_games = Button(master=frame_2, text='Owned games',background='#171a21', foreground='#FFFFFF', command=toon_owned_games)
 button_owned_games.place(x=50, y=220, width=200)
 
-root.mainloop()
-
-
+print('Ready to start Program')
+while True:
+    if (GPIO.input(switch)) and sr04(sr04_trig, sr04_echo) < 5:
+        root.mainloop()
+        print('program started!')
+        break
+    else:
+        time.sleep(0.5)

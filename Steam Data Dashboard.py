@@ -3,6 +3,7 @@ import functies as fc
 import API
 import matplotlib.pyplot as plt
 from PIL import ImageTk, Image
+import RPi.GPIO as GPIO
 
 Owners = fc.frequentieOwner(fc.list_int('owners'))
 plt.barh(list(Owners.keys()), Owners.values(), color='#171a21', alpha=0.8)
@@ -149,6 +150,17 @@ def get_steam_id():
 
 steam_id = []  #steam id: 76561198169107517
 
+switch1 = 2
+switch2 = 3
+GPIO.setup(switch1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(switch2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
+while True:
+    if (GPIO.input(switch1)):
+        print(1)
+    elif (GPIO.input(switch2)):
+        print(2)
+
 root = Tk()
 root.title("Steam Dashboard")
 root.geometry("950x600")
@@ -272,3 +284,5 @@ button_owned_games = Button(master=frame_2, text='Owned games',background='#171a
 button_owned_games.place(x=50, y=220, width=200)
 
 root.mainloop()
+
+

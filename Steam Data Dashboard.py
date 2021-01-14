@@ -4,8 +4,14 @@ import API
 import os
 import RPi.GPIO as GPIO
 import time
-import matplotlib.pyplot as plt
-from PIL import ImageTk, Image
+#import matplotlib.pyplot as plt
+from PIL import ImageTk
+from PIL import Image
+import sys
+
+if os.environ.get('DISPLAY', '') == '':
+    print('no display found. Using :0.0\n')
+    os.environ.__setitem__('DISPLAY', ':0.0')
 
 GPIO.setmode( GPIO.BCM )
 GPIO.setwarnings( 0 )
@@ -14,11 +20,104 @@ switch = 23
 sr04_trig = 24
 sr04_echo = 25
 servo = 18
+clock_pin = 20
+data_pin = 21
+shift_clock_pin = 5
+latch_clock_pin = 6
+data_pin_schuifregelaar = 13
+
+rood = [0, 0, 255]
+oranje = [0, 150, 255]
+groen = [0, 255, 0]
 
 GPIO.setup( switch, GPIO.IN, pull_up_down=GPIO.PUD_DOWN )
 GPIO.setup( sr04_trig, GPIO.OUT )
 GPIO.setup( sr04_echo, GPIO.IN, pull_up_down=GPIO.PUD_DOWN )
 GPIO.setup(servo, GPIO.OUT)
+GPIO.setup(clock_pin, GPIO.OUT)
+GPIO.setup(data_pin, GPIO.OUT)
+GPIO.setup( shift_clock_pin, GPIO.OUT )
+GPIO.setup( latch_clock_pin, GPIO.OUT )
+GPIO.setup( data_pin_schuifregelaar, GPIO.OUT )
+
+
+def hc595(aantal_online):
+    for i in range(8):
+        if aantal_online > 0:
+            GPIO.output(data_pin_schuifregelaar, GPIO.HIGH)
+            aantal_online = aantal_online - 1
+        else:
+            GPIO.output(data_pin_schuifregelaar, GPIO.LOW)
+        GPIO.output(shift_clock_pin, GPIO.HIGH)
+        GPIO.output(shift_clock_pin, GPIO.LOW)
+    GPIO.output(latch_clock_pin, GPIO.HIGH)
+    GPIO.output(latch_clock_pin, GPIO.LOW)
+    time.sleep(0.1)
+
+
+def led_strip_uit():
+    for i in range(4):
+        apa102_send_bytes([0, 0, 0, 0, 0, 0, 0, 0])
+    for i in range(8):
+        apa102_send_bytes([1, 1, 1, 1, 1, 1, 1, 1])
+        for i in range(3):
+            apa102_send_bytes([0, 0, 0, 0, 0, 0, 0, 0])
+    for i in range(4):
+        apa102_send_bytes([1, 1, 1, 1, 1, 1, 1, 1])
+
+
+def apa102_send_bytes(bytes):
+    for bit in bytes:
+        if bit == 1:
+            GPIO.output(data_pin, GPIO.HIGH)
+        elif bit == 0:
+            GPIO.output(data_pin, GPIO.LOW)
+        GPIO.output(clock_pin, GPIO.HIGH)
+        GPIO.output(clock_pin, GPIO.LOW)
+    time.sleep(0.003)
+
+            
+
+def apa102(colors):
+    for i in range(4):
+        apa102_send_bytes([0, 0, 0, 0, 0, 0, 0, 0])
+    for color in colors:
+        apa102_send_bytes([1, 1, 1, 1, 1, 1, 1, 1])
+        for kleur in color:
+            bits = []
+            for i in range(8):
+                if kleur % 2 == 1:
+                    bits.append(1)
+                else:
+                    bits.append(0)
+                kleur = kleur // 2
+            apa102_send_bytes(bits)
+    for i in range(4):
+        apa102_send_bytes([1, 1, 1, 1, 1, 1, 1, 1])
+
+       
+
+
+def kleuren(aantal_uren_gametijd):
+    if aantal_uren_gametijd >= 1000:
+        colors = []
+        for i in range(8):
+            colors.append(rood)
+    else:
+        colors = []
+        aantal = aantal_uren_gametijd
+        for i in range(8):
+            if aantal == 0:
+                colors.append(groen)
+            elif aantal < 125:
+                colors.append(oranje)
+                aantal = 0
+            elif aantal > 125:
+                colors.append(rood)
+                aantal = aantal - 125
+    apa102(colors)
+
+
 
 def pulse( pin, delay1, delay2 ):
    GPIO.output(pin, GPIO.HIGH)
@@ -28,12 +127,8 @@ def pulse( pin, delay1, delay2 ):
 
 def servo_pulse( pin_nr, aantal_uren_gametijd ):
     position = aantal_uren_gametijd
-    print(aantal_uren_gametijd)
-    print(position)
     pos1 = 0.0005 + (0.002/100*position)
     pos2 = 0.02
-    print(pos1)
-    print(pos2)
     pulse(pin_nr, pos1, pos2)
 
 def sr04( trig_pin, echo_pin ):
@@ -55,11 +150,7 @@ def sr04( trig_pin, echo_pin ):
    afstandCentimeter = (afstand / 10000000)
    return afstandCentimeter
 
-def displayCheckRPi():
-    """Needs checking otherwise doesn't work on RPi"""
-    if os.environ.get('DISPLAY', '') == '':
-        os.environ.__setitem__('DISPLAY', ':0.0')
-displayCheckRPi()
+
 
 def FreqOwner():
     destroy()
@@ -169,16 +260,19 @@ def variatieLeeftijd():
 
 
 def toon_gametijd():
-    x = API.totale_gametijd(steam_id[0])
-    gametijd = round( x /10)
+    led_strip_uit()
+    totale_gametijd = API.totale_gametijd(steam_id[0])
+    gametijd = round(totale_gametijd /10)
     for i in range(0, gametijd, 1):
-        servo_pulse(servo, gametijd)
+        servo_pulse(servo, i)
+    kleuren(totale_gametijd)
     destroy()
     display_2.delete(1.0, END)
-    display_2.insert(END, f'''{API.naam(steam_id[0])} heeft totaal {punt_naar_komma(API.totale_gametijd(steam_id[0]))} uur gegamed!\n''')
+    display_2.insert(END, f'''{API.naam(steam_id[0])} heeft totaal {punt_naar_komma(totale_gametijd)} uur gegamed!\n''')
 
 
 def toon_owned_games():
+    led_strip_uit()
     destroy()
     display_2.delete(1.0, END)
     display_2.insert(END, f'''{API.naam(steam_id[0])} heeft de volgende games:\n\n{API.owned_games(steam_id[0])}\n''')
@@ -187,12 +281,14 @@ def toon_owned_games():
 def raise_frame(frame):
     display.delete(1.0, END)
     display_2.delete(1.0, END)
+    led_strip_uit()
     frame.tkraise()
     frame_header.tkraise()
 
 
 def get_steam_id():
     raise_frame(frame_1)
+    hc595(0)
     steam_id.clear()
     steam_id.append(steam_id_entry.get())
     steam_id_entry.delete(0, 'end')
@@ -202,7 +298,29 @@ def get_steam_id():
         steam_id_info.config(text=f'nu in gebruik:\n{steam_id[0]}\n{API.naam(steam_id[0])}')
 
 
-steam_id = []  #steam id: 76561198169107517
+def toon_vrienden_online():
+    led_strip_uit()
+    destroy()
+    display_2.delete(1.0, END)
+    vrienden_lijst = API.vrienden_online(steam_id[0])
+    display_2.insert(END, f'''De volgende mensen zijn online:\n\n''')
+    aantal_online = 0
+    for index in vrienden_lijst:
+        if index[1] == 1:
+            aantal_online = aantal_online + 1
+            display_2.insert(END, f'''{index[0]} -> online\n''')
+        if index[1] == 0:
+            display_2.insert(END, f'''{index[0]} -> offline\n''')
+        if index[1] == 3:
+            display_2.insert(END, f'''{index[0]} -> afwezig\n''')
+    display_2.insert(END, f'''\nEr zijn {aantal_online} mensen online!\n''')
+    if aantal_online <= 8:
+        hc595(aantal_online)
+    else:
+        hc595(8)
+
+
+steam_id = []  #steam id: 76561198169107517, 76561198099842424
 
 #Owners = fc.frequentieOwner(fc.list_int('owners'))
 #plt.barh(list(Owners.keys()), Owners.values(), color='#171a21', alpha=0.8)
@@ -333,11 +451,16 @@ button_gametijd.place(x=50, y=190, width=200)
 button_owned_games = Button(master=frame_2, text='Owned games',background='#171a21', foreground='#FFFFFF', command=toon_owned_games)
 button_owned_games.place(x=50, y=220, width=200)
 
+button_online_vrienden = Button(master=frame_2, text='Online vrienden',background='#171a21', foreground='#FFFFFF', command=toon_vrienden_online)
+button_online_vrienden.place(x=50, y=250, width=200)
+
+
 print('Ready to start Program')
-while True:
-    if (GPIO.input(switch)) and sr04(sr04_trig, sr04_echo) < 5:
-        root.mainloop()
-        print('program started!')
-        break
-    else:
-        time.sleep(0.5)
+# while True:
+#     if (GPIO.input(switch)) and sr04(sr04_trig, sr04_echo) < 5:
+#         print('program started!')
+#         break
+
+root.mainloop()
+led_strip_uit()
+hc595(0)

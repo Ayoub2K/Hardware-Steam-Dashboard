@@ -185,11 +185,11 @@ def search():
         data = fc.search_data(zoekwoord)
         display.insert(END, f'''
     Game: {data[0]} \n
-    prijs: €{data[4]} \n
-    Platform : {data[8]} \n
+    prijs: €{punt_naar_komma(data[4])} \n
+    Platform : {data[8].replace(';', ', ')} \n
     Publicatiedatum: {data[1]} \n
     Ontwikkelaar: {data[2]} \n
-    Genre: {data[3]} \n
+    Genre: {data[3].replace(';', ', ')} \n
     vereiste leeftijd: {data[5]} \n
     Postieve reviews: {data[6]} \n
     Negatieve reviews: {data[7]} \n

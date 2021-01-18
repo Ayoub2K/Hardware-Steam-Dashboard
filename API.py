@@ -4,7 +4,6 @@ import time
 
 # steam id = 76561198169107517
 # api code = 0303DC2418211FDE854C25DB323816C2
-# 2014-12-21T18:43:54+00:00 -> 1419187434
 
 def totale_gametijd(steam_id):
     url_games = 'http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=0303DC2418211FDE854C25DB323816C2&steamid=' + steam_id + '&format=json'

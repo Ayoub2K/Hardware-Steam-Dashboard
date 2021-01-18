@@ -1,8 +1,10 @@
 import json
 from urllib.request import urlopen
+import time
 
 # steam id = 76561198169107517
 # api code = 0303DC2418211FDE854C25DB323816C2
+# 2014-12-21T18:43:54+00:00 -> 1419187434
 
 def totale_gametijd(steam_id):
     url_games = 'http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=0303DC2418211FDE854C25DB323816C2&steamid=' + steam_id + '&format=json'
@@ -51,4 +53,25 @@ def vrienden_online(steam_id):
         vrienden_status.append([vriend['response']['players'][0]['personaname'], vriend['response']['players'][0]['personastate']])
     return vrienden_status
 
-# vrienden_online('76561198169107517')
+
+def recently_played(steam_id):
+    url_games = 'http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key=0303DC2418211FDE854C25DB323816C2&steamid=' + steam_id + '&format=json'
+    with urlopen(url_games) as response:
+        source = response.read()
+    info = json.loads(source)
+    aantal_games = info["response"]["total_count"]
+    games = []
+    for game in info["response"]["games"]:
+        games.append(game["name"])
+    return [aantal_games, games]
+
+
+def account_aangemaakt(steam_id):
+    url_gebruikers_info = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=0303DC2418211FDE854C25DB323816C2&steamids=' + steam_id
+    with urlopen(url_gebruikers_info) as response:
+        source = response.read()
+    gebruikers_info = json.loads(source)
+    return time.gmtime(gebruikers_info["response"]["players"][0]["timecreated"])
+
+
+# print(account_aangemaakt('76561198169107517'))

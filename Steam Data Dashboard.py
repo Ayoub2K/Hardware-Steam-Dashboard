@@ -4,10 +4,10 @@ import API
 import os
 import RPi.GPIO as GPIO
 import time
-#import matplotlib.pyplot as plt
 from PIL import ImageTk
 from PIL import Image
-import sys
+from datetime import datetime
+import matplotlib.pyplot as plt
 
 if os.environ.get('DISPLAY', '') == '':
     print('no display found. Using :0.0\n')
@@ -209,6 +209,9 @@ def toon_required_age():
     sortedlist = fc.mergeSort(fc.list_data('required_age'))
     for index in sortedlist:
         display.insert(END, f'''{index[0]} - {index[1]}\n''')
+    if sr04(sr04_trig, sr04_echo) < 7.5:
+        display.see('end')
+
 
 def toonPrijs():
     destroy()
@@ -216,6 +219,9 @@ def toonPrijs():
     sortedlist = fc.mergeSort(fc.list_data('price'))
     for index in sortedlist:
         display.insert(END, f'''€{punt_naar_komma(index[0])} - {index[1]} \n''')
+    if sr04(sr04_trig, sr04_echo) < 7.5:
+        display.see('end')
+
 
 def GemiddeldePrijs():
     destroy()
@@ -305,14 +311,25 @@ def toon_vrienden_online():
     vrienden_lijst = API.vrienden_online(steam_id[0])
     display_2.insert(END, f'''De volgende mensen zijn online:\n\n''')
     aantal_online = 0
+    regel = 3
     for index in vrienden_lijst:
         if index[1] == 1:
             aantal_online = aantal_online + 1
             display_2.insert(END, f'''{index[0]} -> online\n''')
+            begin = len(index[0]) + 4
+            display_2.tag_add("online", f'{regel}.{begin}', f'{regel}.{begin + 6}')
+            display_2.tag_config("online", foreground="green")
         if index[1] == 0:
             display_2.insert(END, f'''{index[0]} -> offline\n''')
+            begin = len(index[0]) + 4
+            display_2.tag_add("offline", f'{regel}.{begin}', f'{regel}.{begin + 7}')
+            display_2.tag_config("offline", foreground="red")
         if index[1] == 3:
             display_2.insert(END, f'''{index[0]} -> afwezig\n''')
+            begin = len(index[0]) + 4
+            display_2.tag_add("afwezig", f'{regel}.{begin}', f'{regel}.{begin + 7}')
+            display_2.tag_config("afwezig", foreground="orange")
+        regel = regel + 1
     display_2.insert(END, f'''\nEr zijn {aantal_online} mensen online!\n''')
     if aantal_online <= 8:
         hc595(aantal_online)
@@ -320,19 +337,57 @@ def toon_vrienden_online():
         hc595(8)
 
 
+def toon_recently_played():
+    led_strip_uit()
+    destroy()
+    display_2.delete(1.0, END)
+    info = API.recently_played(steam_id[0])
+    display_2.insert(END, f'''{API.naam(steam_id[0])} heeft recent {info[0]} verschillende games gespeeld, Namelijk:\n\n''')
+    for game in info[1]:
+        display_2.insert(END, f'''{game}\n''')
+
+
+def toon_account_aangemaakt():
+    led_strip_uit()
+    destroy()
+    display_2.delete(1.0, END)
+    tijd_aanmaak = API.account_aangemaakt(steam_id[0])
+    tijd_nu = datetime.now()
+    display_2.insert(END, f'''{API.naam(steam_id[0])} heeft zijn/haar account aangemaakt op: {tijd_aanmaak.tm_mday}-{tijd_aanmaak.tm_mon}-{tijd_aanmaak.tm_year}\n\n''')
+    tijd = f'{tijd_aanmaak.tm_year}-{tijd_aanmaak.tm_mon}-{tijd_aanmaak.tm_mday} {tijd_aanmaak.tm_hour}:{tijd_aanmaak.tm_min}:{tijd_aanmaak.tm_sec}'
+    tijd_aanmaak = datetime.strptime(tijd, '%Y-%m-%d %H:%M:%S')
+    tijd_tussen = tijd_nu - tijd_aanmaak
+    dagen = tijd_tussen.days
+    jaar = int(dagen / 365)
+    dagen = dagen - jaar * 365
+    maand = int(dagen / 30)
+    dagen = dagen - maand * 30
+    sec = tijd_tussen.seconds
+    uur = int(sec / 60 / 60)
+    sec = sec - uur * 60 * 60
+    min = int(sec / 60)
+    sec = sec - min * 60
+    display_2.insert(END, f'''Om precies te zijn: {jaar} jaar, {maand} maanden, {dagen} dagen, {uur} uren,\n{min} minuten, {sec} seconden geleden!''')
+
+
+# hier wordt het ingevoerde steam id opgeslagen
 steam_id = []  #steam id: 76561198169107517, 76561198099842424
 
-#Owners = fc.frequentieOwner(fc.list_int('owners'))
-#plt.barh(list(Owners.keys()), Owners.values(), color='#171a21', alpha=0.8)
-#plt.title('Hoeveel owners 1 game heeft')
-#plt.tight_layout()
-#plt.savefig('grafiekowner.png', dpi=100)
+
+# dit is voor de grafiek
+Owners = fc.frequentieOwner(fc.list_int('owners'))
+plt.barh(list(Owners.keys()), list(Owners.values()), color='#171a21', alpha=0.8)
+plt.title('Hoeveel owners 1 game heeft')
+plt.tight_layout()
+plt.savefig('grafiekowner.png', dpi=100)
 
 
+# Tkinter scherm
 root = Tk()
 root.title("Steam Dashboard")
 root.geometry("950x600")
 
+# de verschillende frames
 frame_2 = Frame(master=root)
 frame_2.place(x=0, y=0, width=950, height=600)
 
@@ -346,7 +401,7 @@ frame_header = Frame(master=root)
 frame_header.place(x=0, y=0, width=950, height=80)
 
 
-#steam id scherm waar je steam id wordt gevraagd
+# steam id scherm waar je steam id wordt gevraagd
 uitleg = Label(master=steam_id_frame, text='Vul hier je Steam id in:')
 uitleg.place(x=400, y=270, width=150, height=25)
 
@@ -360,20 +415,20 @@ insturcties = Label(master=steam_id_frame, text="Om je steam id te krijgen ga je
                                                 " (links boven) > instellingen > vink het vakje met 'Steam adresbalk "
                                                 "weergeven indien beschikbaar' aan >\nOK > ga naar je profiel > links "
                                                 "boven zie je een link en daar staat je steam id tussen")
-insturcties.place(y=550, x=190)
+insturcties.place(y=550, x=115)
 
 
-# de display waarin data wordt weer gegeven
+# de display van scherm 1 waarin data wordt weer gegeven
 display = Text(frame_1, background="#f0f0f0", height=21, width=50, font=("Helvetica", 14), pady=15)
 display.place(x=350, y=85)
 
 scroll_y = Scrollbar(frame_1, orient="vertical", command=display.yview)
-scroll_y.place(x=930, y=85, height=495, anchor='ne')
+scroll_y.place(x=930, y=85, height=475, anchor='ne')
 
 display.configure(yscrollcommand=scroll_y.set)
 
 
-#knopen
+# frame 1
 Search = Entry(master=frame_1, width=50)
 Search.place(x=50, y=100, width=150, height=25)
 
@@ -414,53 +469,78 @@ img = ImageTk.PhotoImage(img)
 panel = Label(frame_1, image=img)
 panel.image = img
 
+
 #Dashboard header
 header = Label(master=frame_header,
               text='Steam Dashboard',
-              background='#171a21',
+              background='#24282f',
               foreground='#969696',
               font=('Helvetica', 16, 'bold italic'),
-              width=74,
+              width=80,
               height=3)
 header.place(x=0, y=0)
 
+img2 = Image.open("Steam-Logo.png")
+img2 = img2.resize((80, 50), Image.ANTIALIAS)
+img2 = ImageTk.PhotoImage(img2)
+
+steam_logo = Label(master=frame_header, image=img2, background='#24282f')
+steam_logo.image = img2
+steam_logo.place(x=310, y=15)
+
+
+
+# wisselen tussen schermen
 button_switch = Button(master=frame_1, text='Volgend scherm', background='#171a21', foreground='#FFFFFF', command=lambda:raise_frame(frame_2))
 button_switch.place(x=50, y=530, width=200)
 
 button_terug = Button(master=frame_2, text='Terug', background='#171a21', foreground='#FFFFFF', command=lambda:raise_frame(frame_1))
 button_terug.place(x=50, y=530, width=200)
 
-# de display van frame 2
+button_veranderen = Button(master=frame_2, text='Verander',background='#171a21', foreground='#FFFFFF', command=lambda:raise_frame(steam_id_frame))
+button_veranderen.place(x=50, y=145, width=200)
+
+
+# de display van scherm 2 waarin data wordt weer gegeven
 display_2 = Text(frame_2, background="#f0f0f0", height=21, width=50, font=("Helvetica", 14), pady=15)
 display_2.place(x=350, y=85)
 
 scroll_y = Scrollbar(frame_2, orient="vertical", command=display_2.yview)
-scroll_y.place(x=930, y=85, height=495, anchor='ne')
+scroll_y.place(x=930, y=85, height=475, anchor='ne')
 
 display_2.configure(yscrollcommand=scroll_y.set)
 
+
+# frame 2
 steam_id_info = Label(master=frame_2, text='')
 steam_id_info.place(x=50, y=90, width=200)
 
-button_veranderen = Button(master=frame_2, text='Verander',background='#171a21', foreground='#FFFFFF', command=lambda:raise_frame(steam_id_frame))
-button_veranderen.place(x=50, y=140, width=200)
-
 button_gametijd = Button(master=frame_2, text='Totale gametijd',background='#171a21', foreground='#FFFFFF', command=toon_gametijd)
-button_gametijd.place(x=50, y=190, width=200)
+button_gametijd.place(x=50, y=220, width=200)
+
+button_recently_played = Button(master=frame_2, text='Recent gespeeld',background='#171a21', foreground='#FFFFFF', command=toon_recently_played)
+button_recently_played.place(x=50, y=255, width=200)
 
 button_owned_games = Button(master=frame_2, text='Owned games',background='#171a21', foreground='#FFFFFF', command=toon_owned_games)
-button_owned_games.place(x=50, y=220, width=200)
+button_owned_games.place(x=50, y=290, width=200)
 
 button_online_vrienden = Button(master=frame_2, text='Online vrienden',background='#171a21', foreground='#FFFFFF', command=toon_vrienden_online)
-button_online_vrienden.place(x=50, y=250, width=200)
+button_online_vrienden.place(x=50, y=360, width=200)
+
+button_datum_aanmaak = Button(master=frame_2, text='datum van aanmaak',background='#171a21', foreground='#FFFFFF', command=toon_account_aangemaakt)
+button_datum_aanmaak.place(x=50, y=430, width=200)
 
 
+# start knop
 print('Ready to start Program')
-# while True:
-#     if (GPIO.input(switch)) and sr04(sr04_trig, sr04_echo) < 5:
-#         print('program started!')
-#         break
+while True:
+    if (GPIO.input(switch)):
+        print('program started!')
+        break
 
+# tkinter loop
 root.mainloop()
+
+# lampjes uit
 led_strip_uit()
 hc595(0)

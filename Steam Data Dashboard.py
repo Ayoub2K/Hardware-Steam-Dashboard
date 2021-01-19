@@ -10,7 +10,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 
 if os.environ.get('DISPLAY', '') == '':
-    print('no display found. Using :0.0\n')
+    # print('no display found. Using :0.0\n')
     os.environ.__setitem__('DISPLAY', ':0.0')
 
 GPIO.setmode( GPIO.BCM )
@@ -268,8 +268,8 @@ def variatieLeeftijd():
 def toon_gametijd():
     led_strip_uit()
     totale_gametijd = API.totale_gametijd(steam_id[0])
-    gametijd = round(totale_gametijd /10)
-    for i in range(0, gametijd, 1):
+    gametijd = 100 - round(totale_gametijd /10)
+    for i in range(100, gametijd, -1):
         servo_pulse(servo, i)
     kleuren(totale_gametijd)
     destroy()
@@ -360,18 +360,18 @@ def toon_account_aangemaakt():
     dagen = tijd_tussen.days
     jaar = int(dagen / 365)
     dagen = dagen - jaar * 365
-    maand = int(dagen / 30)
-    dagen = dagen - maand * 30
+    # maand = int(dagen / 30) , {maand} maanden
+    # dagen = dagen - maand * 30
     sec = tijd_tussen.seconds
     uur = int(sec / 60 / 60)
     sec = sec - uur * 60 * 60
     min = int(sec / 60)
     sec = sec - min * 60
-    display_2.insert(END, f'''Om precies te zijn: {jaar} jaar, {maand} maanden, {dagen} dagen, {uur} uren,\n{min} minuten, {sec} seconden geleden!''')
+    display_2.insert(END, f'''Om precies te zijn: {jaar} jaar, {dagen} dagen, {uur} uren,\n{min} minuten, {sec} seconden geleden!''')
 
 
 # hier wordt het ingevoerde steam id opgeslagen
-steam_id = []  #steam id: 76561198169107517, 76561198099842424
+steam_id = []  #steam ids om te testen: 76561198169107517, 76561198099842424
 
 
 # dit is voor de grafiek
@@ -525,10 +525,10 @@ button_owned_games = Button(master=frame_2, text='Owned games',background='#171a
 button_owned_games.place(x=50, y=290, width=200)
 
 button_online_vrienden = Button(master=frame_2, text='Online vrienden',background='#171a21', foreground='#FFFFFF', command=toon_vrienden_online)
-button_online_vrienden.place(x=50, y=360, width=200)
+button_online_vrienden.place(x=50, y=340, width=200)
 
 button_datum_aanmaak = Button(master=frame_2, text='datum van aanmaak',background='#171a21', foreground='#FFFFFF', command=toon_account_aangemaakt)
-button_datum_aanmaak.place(x=50, y=430, width=200)
+button_datum_aanmaak.place(x=50, y=390, width=200)
 
 
 # start knop

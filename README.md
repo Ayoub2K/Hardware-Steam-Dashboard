@@ -12,18 +12,9 @@ het meest gespeeld worden en wanneer je vrienden online zijn.
 
 - Hardware besturen met behulp van Python
 - Grafishe user interface bouwen met behulp van Tkinter
+- Effiecient veel data sorteren met behulp van algoritmes 
 - Werken met een SSH connectie
 - Weken met Linux op een RaspberryPi
-
-## Technologieen
-
-- Python
-- Tkinter
-- Matplotlib
-
-- Pycharm
-- PuTTY
-- Vnc viewer
 
 ## Teamleden
 Jarno   1781716 jarno.brocker@student.hu.nl   Jarno-2003  

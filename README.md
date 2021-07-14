@@ -21,9 +21,9 @@ het meest gespeeld worden en wanneer je vrienden online zijn.
 - Tkinter
 - Matplotlib
 
--Pycharm
--PuTTY
--Vnc viewer
+- Pycharm
+- PuTTY
+- Vnc viewer
 
 ## Teamleden
 Jarno   1781716 jarno.brocker@student.hu.nl   Jarno-2003  

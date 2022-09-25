@@ -17,8 +17,5 @@ het meest gespeeld worden en wanneer je vrienden online zijn.
 - Weken met Linux op een RaspberryPi
 
 ## Teamleden
-Jarno   1781716 jarno.brocker@student.hu.nl   Jarno-2003  
-Mees    1785659 Mees.soentken@student.hu.nl   MeesSoentken  
-Max     1783784 max.appeldoorn@student.hu.nl  appeltje18  
-Ayoub   1783513 ayoub.aarkoub@student.hu.nl   Ayoub2K  
-Gianni  1753114 gianni.zucca@student.hu.nl    GGrant97  
+Jarno   1781716 jarno.brocker@student.hu.nl   Jarno-2003
+Ayoub   1783513 ayoub.aarkoub@student.hu.nl   Ayoub2K

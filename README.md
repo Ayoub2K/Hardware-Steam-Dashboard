@@ -15,7 +15,3 @@ het meest gespeeld worden en wanneer je vrienden online zijn.
 - Effiecient veel data sorteren met behulp van algoritmes 
 - Werken met een SSH connectie
 - Weken met Linux op een RaspberryPi
-
-## Teamleden
-Jarno   1781716 jarno.brocker@student.hu.nl   Jarno-2003
-Ayoub   1783513 ayoub.aarkoub@student.hu.nl   Ayoub2K

@@ -1,6 +1,9 @@
 # SteamProject
 
 ## Demonstratie
+
+![steamDashboard](https://github.com/Ayoub2K/ProjectSteam/blob/master/steamDashboard.gif)
+
 https://www.youtube.com/watch?v=eFoeO4IuLKc&ab_channel=Ayb
 
 ## Doel project

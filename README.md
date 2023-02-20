@@ -1,15 +1,18 @@
 # SteamProject
 
-## Demonstratie
-
-![steamDashboard](https://github.com/Ayoub2K/ProjectSteam/blob/master/steamDashboard.gif)
-
-https://www.youtube.com/watch?v=eFoeO4IuLKc&ab_channel=Ayb
-
 ## Doel project
 Een grafische weergave van het gaming gedrag van jou vrienden.
 Zoals bijvoorbeeld welke games je vrienden spelen, welke games
 het meest gespeeld worden en wanneer je vrienden online zijn.
+
+
+![steamDashboard](https://github.com/Ayoub2K/ProjectSteam/blob/master/steamDashboard.gif)
+
+
+## Demonstratie
+
+https://www.youtube.com/watch?v=eFoeO4IuLKc&ab_channel=Ayb
+
 
 ## Leerdoelen
 

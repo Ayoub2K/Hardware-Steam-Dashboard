@@ -1,4 +1,4 @@
-# SteamProject
+# Hardware Steam Dashboard
 
 ## Doel project
 Een grafische weergave van het gaming gedrag van jou vrienden.
